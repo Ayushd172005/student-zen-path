@@ -26,7 +26,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))'
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
@@ -52,6 +53,14 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))'
+				},
+				warning: {
+					DEFAULT: 'hsl(var(--warning))',
+					foreground: 'hsl(var(--warning-foreground))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
@@ -63,10 +72,21 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				}
 			},
-			borderRadius: {
-				lg: 'var(--radius)',
-				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+			backgroundImage: {
+				'gradient-hero': 'var(--gradient-hero)',
+				'gradient-calm': 'var(--gradient-calm)',
+				'gradient-healing': 'var(--gradient-healing)',
+				'gradient-support': 'var(--gradient-support)',
+				'gradient-wellness': 'var(--gradient-wellness)'
+			},
+			boxShadow: {
+				'gentle': 'var(--shadow-gentle)',
+				'warm': 'var(--shadow-warm)',
+				'deep': 'var(--shadow-deep)'
+			},
+			transitionTimingFunction: {
+				'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+				'gentle': 'cubic-bezier(0.25, 0.1, 0.25, 1)'
 			},
 			keyframes: {
 				'accordion-down': {
@@ -84,11 +104,26 @@ export default {
 					to: {
 						height: '0'
 					}
+				},
+				'breathe': {
+					'0%, 100%': { transform: 'scale(1)', opacity: '0.8' },
+					'50%': { transform: 'scale(1.02)', opacity: '1' }
+				},
+				'crisis-pulse': {
+					'0%, 100%': { boxShadow: '0 0 0 0 hsl(var(--destructive) / 0.7)' },
+					'50%': { boxShadow: '0 0 0 15px hsl(var(--destructive) / 0)' }
+				},
+				'loading-dots': {
+					'0%, 80%, 100%': { transform: 'scale(0)' },
+					'40%': { transform: 'scale(1)' }
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
-				'accordion-up': 'accordion-up 0.2s ease-out'
+				'accordion-up': 'accordion-up 0.2s ease-out',
+				'breathe': 'breathe var(--breath-duration, 4s) ease-in-out infinite',
+				'crisis-pulse': 'crisis-pulse 2s ease-in-out infinite',
+				'loading-dots': 'loading-dots 1.4s ease-in-out infinite both'
 			}
 		}
 	},
