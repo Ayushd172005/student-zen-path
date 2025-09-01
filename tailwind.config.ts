@@ -116,6 +116,28 @@ export default {
 				'loading-dots': {
 					'0%, 80%, 100%': { transform: 'scale(0)' },
 					'40%': { transform: 'scale(1)' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0px) scale(1)' },
+					'25%': { transform: 'translateY(-20px) scale(1.05)' },
+					'50%': { transform: 'translateY(10px) scale(0.95)' },
+					'75%': { transform: 'translateY(-15px) scale(1.02)' }
+				},
+				'wave': {
+					'0%': { transform: 'translateX(0)' },
+					'100%': { transform: 'translateX(50%)' }
+				},
+				'pulse-bg': {
+					'0%, 100%': { opacity: '0.3' },
+					'50%': { opacity: '0.6' }
+				},
+				'fade-in-up': {
+					'0%': { opacity: '0', transform: 'translateY(30px)' },
+					'100%': { opacity: '1', transform: 'translateY(0)' }
+				},
+				'slide-in-right': {
+					'0%': { opacity: '0', transform: 'translateX(30px)' },
+					'100%': { opacity: '1', transform: 'translateX(0)' }
 				}
 			},
 			animation: {
@@ -123,7 +145,12 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'breathe': 'breathe var(--breath-duration, 4s) ease-in-out infinite',
 				'crisis-pulse': 'crisis-pulse 2s ease-in-out infinite',
-				'loading-dots': 'loading-dots 1.4s ease-in-out infinite both'
+				'loading-dots': 'loading-dots 1.4s ease-in-out infinite both',
+				'float': 'float 20s ease-in-out infinite',
+				'wave': 'wave 15s linear infinite',
+				'pulse-bg': 'pulse-bg 3s ease-in-out infinite',
+				'fade-in-up': 'fade-in-up 0.6s ease-out',
+				'slide-in-right': 'slide-in-right 0.6s ease-out'
 			}
 		}
 	},

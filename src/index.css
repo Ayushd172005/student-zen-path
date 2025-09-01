@@ -186,6 +186,131 @@
     50% { transform: scale(1.02); opacity: 1; }
   }
   
+  /* Interactive Background Animations */
+  .floating-shapes {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .floating-shapes::before,
+  .floating-shapes::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.1;
+    animation: float 20s ease-in-out infinite;
+  }
+  
+  .floating-shapes::before {
+    width: 200px;
+    height: 200px;
+    background: hsl(var(--primary));
+    top: 20%;
+    left: 10%;
+    animation-delay: 0s;
+  }
+  
+  .floating-shapes::after {
+    width: 150px;
+    height: 150px;
+    background: hsl(var(--secondary));
+    top: 60%;
+    right: 15%;
+    animation-delay: 10s;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    25% { transform: translateY(-20px) scale(1.05); }
+    50% { transform: translateY(10px) scale(0.95); }
+    75% { transform: translateY(-15px) scale(1.02); }
+  }
+  
+  /* Wave Animation */
+  .wave-background {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .wave-background::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.05), transparent);
+    animation: wave 15s linear infinite;
+  }
+  
+  @keyframes wave {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(50%); }
+  }
+  
+  /* Motivational Quote Styles */
+  .motivational-quote {
+    @apply text-center py-8 px-6 relative;
+    background: linear-gradient(135deg, hsl(var(--primary) / 0.05), hsl(var(--secondary) / 0.05));
+    border-radius: 1rem;
+    border: 1px solid hsl(var(--border));
+  }
+  
+  .motivational-quote::before {
+    content: '"';
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    font-size: 4rem;
+    color: hsl(var(--primary) / 0.2);
+    font-family: serif;
+  }
+  
+  /* Enhanced Hover Effects */
+  .interactive-card {
+    @apply wellness-card relative overflow-hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .interactive-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.1), transparent);
+    transition: left 0.6s;
+  }
+  
+  .interactive-card:hover::before {
+    left: 100%;
+  }
+  
+  .interactive-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-warm);
+  }
+  
+  /* Pulsing Background for Crisis Sections */
+  .crisis-section {
+    position: relative;
+    background: linear-gradient(135deg, hsl(var(--destructive) / 0.05), hsl(var(--warning) / 0.05));
+  }
+  
+  .crisis-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, hsl(var(--destructive) / 0.1), transparent 70%);
+    animation: pulse-bg 3s ease-in-out infinite;
+  }
+  
+  @keyframes pulse-bg {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
+  }
+  
   /* Mental Health Card Hover Effects */
   .wellness-card {
     @apply bg-card rounded-lg p-6 shadow-gentle transition-smooth hover:shadow-warm hover:scale-[1.02];
