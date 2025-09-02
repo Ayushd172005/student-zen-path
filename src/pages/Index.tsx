@@ -1,53 +1,90 @@
-import { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { 
   MessageCircle, 
   Calendar, 
   BookOpen, 
   Users, 
-  BarChart3, 
-  Phone, 
   Heart, 
   Shield, 
   Brain, 
+  Sparkles,
+  Phone,
+  Clock,
+  Star,
+  Award,
+  TrendingUp,
+  User,
   Zap,
   ChevronRight,
   Play,
   Download,
-  Star,
-  Clock,
   ArrowRight,
-  Sparkles,
-  Quote
+  Quote,
+  BarChart3
 } from 'lucide-react';
 import ChatInterface from '@/components/ChatInterface';
 import BookingSystem from '@/components/BookingSystem';
 import ResourceHub from '@/components/ResourceHub';
 import PeerSupport from '@/components/PeerSupport';
 import AdminDashboard from '@/components/AdminDashboard';
+import Navigation from '@/components/Navigation';
+import AuthModal from '@/components/AuthModal';
+import StudentDashboard from '@/components/StudentDashboard';
 
 const Index = () => {
-  const [activeSection, setActiveSection] = useState('home');
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
+  const [authType, setAuthType] = useState<'login' | 'signup'>('login');
+  const [currentUser, setCurrentUser] = useState<{ name: string; email: string; role: string } | null>(null);
+  const [showAdmin, setShowAdmin] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Animation hooks for sections
+  const [heroRef, heroInView] = useInView({ threshold: 0.1, triggerOnce: true });
+  const [featuresRef, featuresInView] = useInView({ threshold: 0.1, triggerOnce: true });
+  const [statsRef, statsInView] = useInView({ threshold: 0.1, triggerOnce: true });
+
+  const handleShowAuth = (type: 'login' | 'signup') => {
+    setAuthType(type);
+    setShowAuth(true);
+  };
+
+  const handleAuthSuccess = (user: { name: string; email: string; role: string }) => {
+    setCurrentUser(user);
+    setShowAuth(false);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+  };
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-      setActiveSection(sectionId);
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   };
+
+  // If user is logged in, show appropriate dashboard
+  if (currentUser) {
+    if (currentUser.role === 'student') {
+      return <StudentDashboard user={currentUser} onLogout={handleLogout} />;
+    } else if (currentUser.role === 'admin') {
+      return (
+        <div className="min-h-screen bg-background">
+          <AdminDashboard />
+          <div className="fixed top-4 right-4 z-50">
+            <Button variant="outline" onClick={handleLogout}>
+              Sign Out
+            </Button>
+          </div>
+        </div>
+      );
+    }
+  }
 
   const crisisHotlines = [
     { name: "National Crisis Line", number: "988" },
@@ -56,76 +93,52 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-wellness smooth-scroll">
-      {/* Header Navigation */}
-      <header className={`fixed top-0 w-full z-50 transition-all duration-500 ${
-        isScrolled ? 'bg-background/95 backdrop-blur-md shadow-gentle border-b border-border/50' : 'bg-transparent'
-      }`}>
-        <nav className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 group">
-              <div className="w-12 h-12 bg-gradient-hero rounded-full flex items-center justify-center shadow-warm group-hover:scale-110 transition-all duration-300">
-                <Heart className="w-7 h-7 text-white animate-pulse" />
-              </div>
-              <div>
-                <span className="text-2xl font-bold text-foreground">Student Zen Path</span>
-                <div className="text-sm text-muted-foreground font-medium">Your Mental Wellness Journey</div>
-              </div>
-            </div>
-            
-            <div className="hidden md:flex items-center space-x-8">
-              {[
-                { label: 'Get Help', section: 'chat', icon: MessageCircle },
-                { label: 'Resources', section: 'resources', icon: BookOpen },
-                { label: 'Community', section: 'community', icon: Users }
-              ].map((item) => (
-                <button 
-                  key={item.section}
-                  onClick={() => scrollToSection(item.section)}
-                  className="flex items-center space-x-2 text-foreground hover:text-primary transition-all duration-300 group"
-                >
-                  <item.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                  <span>{item.label}</span>
-                </button>
-              ))}
-              <Button 
-                onClick={() => scrollToSection('booking')}
-                className="bg-gradient-hero hover:opacity-90 shadow-gentle hover:shadow-warm transition-all duration-300 px-6"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                Book Session
-              </Button>
-            </div>
-            
-            {/* Crisis Hotline */}
-            <div className="flex items-center space-x-3">
-              <Button 
-                variant="destructive" 
-                size="sm" 
-                className="crisis-pulse hover:scale-105 transition-transform"
-                onClick={() => window.open('tel:988')}
-              >
-                <Phone className="w-4 h-4 mr-2" />
-                Crisis: 988
-              </Button>
-            </div>
-          </div>
-        </nav>
-      </header>
+    <div className="min-h-screen bg-gradient-wellness">
+      {/* Navigation */}
+      <Navigation onShowAuth={handleShowAuth} />
+
+      {/* Authentication Modal */}
+      <AnimatePresence>
+        {showAuth && (
+          <AuthModal
+            isOpen={showAuth}
+            onClose={() => setShowAuth(false)}
+            initialType={authType}
+            onAuthSuccess={handleAuthSuccess}
+          />
+        )}
+      </AnimatePresence>
 
       {/* Hero Section */}
-      <section id="home" className="pt-32 pb-20 px-6 floating-shapes wave-background relative">
+      <motion.section
+        ref={heroRef}
+        id="hero"
+        className="pt-32 pb-20 px-6 floating-shapes wave-background relative"
+        initial={{ opacity: 0 }}
+        animate={heroInView ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.8 }}
+      >
         <div className="container mx-auto text-center relative z-10">
           <div className="max-w-5xl mx-auto">
             {/* Motivational Quote */}
-            <div className="motivational-quote mb-12 max-w-3xl mx-auto animate-fade-in-up">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className="motivational-quote mb-12 max-w-3xl mx-auto"
+            >
               <Quote className="w-8 h-8 text-primary mx-auto mb-4" />
               <p className="text-xl font-medium text-foreground italic">
                 "Your mental health journey matters. Every step you take toward healing is a victory worth celebrating."
               </p>
-            </div>
+            </motion.div>
 
-            <div className="mb-10 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 1, delay: 0.4 }}
+              className="mb-10"
+            >
               <div className="inline-flex items-center bg-primary/10 text-primary px-6 py-3 rounded-full text-sm font-medium mb-8 shadow-gentle">
                 <Shield className="w-5 h-5 mr-3" />
                 Confidential • Secure • Available 24/7
@@ -141,13 +154,18 @@ const Index = () => {
                 A comprehensive digital platform designed specifically for college students, offering AI-powered support, 
                 professional counseling, peer community, and evidence-based resources for mental wellness.
               </p>
-            </div>
+            </motion.div>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={heroInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+              transition={{ duration: 1, delay: 0.6 }}
+              className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
+            >
               <Button 
                 size="lg" 
                 className="bg-gradient-hero hover:opacity-90 shadow-warm text-lg px-10 py-4 hover:scale-105 transition-all duration-300"
-                onClick={() => scrollToSection('chat')}
+                onClick={() => scrollToSection('ai-support')}
               >
                 <MessageCircle className="w-6 h-6 mr-3" />
                 Get Help Now
@@ -157,31 +175,43 @@ const Index = () => {
                 variant="outline" 
                 size="lg"
                 className="text-lg px-10 py-4 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground hover:scale-105 transition-all duration-300"
-                onClick={() => scrollToSection('booking')}
+                onClick={() => scrollToSection('counselor-booking')}
               >
                 <Calendar className="w-6 h-6 mr-3" />
                 Book Counseling
               </Button>
-            </div>
+            </motion.div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+            <motion.div
+              ref={statsRef}
+              initial={{ opacity: 0, y: 50 }}
+              animate={statsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+              transition={{ duration: 1, delay: 0.8 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto"
+            >
               {[
                 { icon: Users, label: "Students Supported", value: "2,500+", color: "text-primary" },
                 { icon: MessageCircle, label: "AI Conversations", value: "15K+", color: "text-secondary" },
                 { icon: Heart, label: "Success Rate", value: "95%", color: "text-accent" },
                 { icon: Clock, label: "Avg Response Time", value: "< 2min", color: "text-success" }
               ].map((stat, index) => (
-                <div key={index} className="interactive-card text-center p-8 group">
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={statsInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.6, delay: 0.9 + index * 0.1 }}
+                  className="interactive-card text-center p-8 group"
+                >
                   <stat.icon className={`w-10 h-10 ${stat.color} mx-auto mb-4 group-hover:scale-110 transition-transform`} />
                   <div className="text-3xl font-bold text-foreground mb-2">{stat.value}</div>
                   <div className="text-sm text-muted-foreground font-medium">{stat.label}</div>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Motivational Banner */}
       <section className="py-16 px-6 bg-gradient-healing relative overflow-hidden">
@@ -306,7 +336,13 @@ const Index = () => {
       </section>
 
       {/* Section Divider with Motivational Quote */}
-      <section className="py-16 px-6 bg-gradient-support">
+      <motion.section
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        viewport={{ once: true }}
+        className="py-16 px-6 bg-gradient-support"
+      >
         <div className="container mx-auto text-center">
           <div className="motivational-quote max-w-3xl mx-auto border-white/20">
             <MessageCircle className="w-12 h-12 text-white mx-auto mb-4" />
@@ -318,12 +354,17 @@ const Index = () => {
             </p>
           </div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Main Sections */}
+      {/* Main Sections with Enhanced Animations */}
       <div className="relative">
-        {/* Chat Section Motivational Intro */}
-        <div className="bg-gradient-healing py-8 px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="bg-gradient-healing py-8 px-6"
+        >
           <div className="container mx-auto text-center">
             <div className="motivational-quote max-w-2xl mx-auto bg-white/10 border-white/20">
               <p className="text-white font-medium">
@@ -331,12 +372,19 @@ const Index = () => {
               </p>
             </div>
           </div>
+        </motion.div>
+        <div id="ai-support">
+          <ChatInterface />
         </div>
-        <ChatInterface />
       </div>
 
-      {/* Booking Section Motivational Intro */}
-      <div className="bg-gradient-calm py-8 px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="bg-gradient-calm py-8 px-6"
+      >
         <div className="container mx-auto text-center">
           <div className="motivational-quote max-w-2xl mx-auto">
             <Calendar className="w-8 h-8 text-primary mx-auto mb-3" />
@@ -345,13 +393,22 @@ const Index = () => {
             </p>
           </div>
         </div>
+      </motion.div>
+      <div id="counselor-booking">
+        <BookingSystem />
       </div>
-      <BookingSystem />
 
-      <ResourceHub />
+      <div id="resources">
+        <ResourceHub />
+      </div>
 
-      {/* Community Section Motivational Intro */}
-      <div className="bg-gradient-support py-8 px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="bg-gradient-support py-8 px-6"
+      >
         <div className="container mx-auto text-center">
           <div className="motivational-quote max-w-2xl mx-auto border-white/20">
             <Users className="w-8 h-8 text-white mx-auto mb-3" />
@@ -360,23 +417,48 @@ const Index = () => {
             </p>
           </div>
         </div>
+      </motion.div>
+      <div id="peer-support">
+        <PeerSupport />
       </div>
-      <PeerSupport />
       
       {/* Quick Access Admin */}
-      <div className="fixed bottom-8 right-8 z-40">
+      <motion.div
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5, delay: 1 }}
+        className="fixed bottom-8 right-8 z-40"
+      >
         <Button 
-          onClick={() => setActiveSection(activeSection === 'admin' ? 'home' : 'admin')}
+          onClick={() => setShowAdmin(!showAdmin)}
           className="rounded-full w-16 h-16 bg-gradient-support shadow-warm hover:shadow-deep hover:scale-110 transition-all duration-300"
         >
           <BarChart3 className="w-7 h-7" />
         </Button>
-      </div>
+      </motion.div>
       
-      {activeSection === 'admin' && <AdminDashboard />}
+      <AnimatePresence>
+        {showAdmin && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.3 }}
+            id="admin"
+          >
+            <AdminDashboard />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Footer */}
-      <footer className="bg-foreground text-white py-16 px-6 relative overflow-hidden">
+      <motion.footer
+        initial={{ opacity: 0, y: 50 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="bg-foreground text-white py-16 px-6 relative overflow-hidden"
+      >
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-secondary/5" />
         <div className="container mx-auto relative z-10">
           <div className="grid md:grid-cols-4 gap-10">
@@ -398,7 +480,11 @@ const Index = () => {
             <div>
               <h4 className="font-bold mb-6 text-lg">Crisis Support</h4>
               <div className="space-y-4">
-                {crisisHotlines.map((hotline, index) => (
+                {[
+                  { name: "National Crisis Line", number: "988" },
+                  { name: "Campus Safety", number: "555-0123" },
+                  { name: "Student Wellness", number: "555-0124" }
+                ].map((hotline, index) => (
                   <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
                     <span className="text-gray-300 font-medium">{hotline.name}</span>
                     <button 
@@ -459,7 +545,7 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </footer>
+      </motion.footer>
     </div>
   );
 };
