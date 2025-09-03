@@ -22,9 +22,6 @@ import {
   Download
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import PomodoroTimer from './PomodoroTimer';
-import MoodTracker from './MoodTracker';
-import BreathingExercise from './BreathingExercise';
 
 interface StudentDashboardProps {
   user: { name: string; email: string; role: string };
@@ -144,8 +141,8 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout }) =
           className="flex justify-between items-center mb-8"
         >
           <div>
-            <h1 className="text-3xl font-display font-bold text-foreground">Welcome back, {user.name}!</h1>
-            <p className="text-muted-foreground font-sans">Let's continue your mental wellness journey</p>
+            <h1 className="text-3xl font-bold text-foreground">Welcome back, {user.name}!</h1>
+            <p className="text-muted-foreground">Let's continue your mental wellness journey</p>
           </div>
           <Button variant="outline" onClick={onLogout}>
             Sign Out
@@ -210,12 +207,11 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout }) =
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="flashcards">Flashcards</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
-            <TabsTrigger value="wellness">Wellness</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
           </TabsList>
 
@@ -437,25 +433,6 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout }) =
                 ))}
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="wellness" className="space-y-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Pomodoro Timer */}
-              <div>
-                <PomodoroTimer />
-              </div>
-              
-              {/* Breathing Exercise */}
-              <div>
-                <BreathingExercise />
-              </div>
-            </div>
-            
-            {/* Mood Tracker */}
-            <div>
-              <MoodTracker />
-            </div>
           </TabsContent>
 
           <TabsContent value="achievements" className="space-y-6">

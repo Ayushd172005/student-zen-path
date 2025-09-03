@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, User, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ThemeToggle } from './ThemeToggle';
 
 interface NavigationProps {
   onShowAuth: (type: 'login' | 'signup') => void;
@@ -91,7 +90,6 @@ const Navigation: React.FC<NavigationProps> = ({ onShowAuth }) => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <ThemeToggle />
             <Button
               variant="ghost"
               size="sm"
