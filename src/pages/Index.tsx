@@ -27,15 +27,14 @@ import {
   Quote,
   BarChart3
 } from 'lucide-react';
-import EnhancedChatInterface from '@/components/EnhancedChatInterface';
+import ChatInterface from '@/components/ChatInterface';
 import BookingSystem from '@/components/BookingSystem';
 import ResourceHub from '@/components/ResourceHub';
 import PeerSupport from '@/components/PeerSupport';
 import AdminDashboard from '@/components/AdminDashboard';
 import Navigation from '@/components/Navigation';
-import GovernmentAuthSystem from '@/components/GovernmentAuthSystem';
+import AuthModal from '@/components/AuthModal';
 import StudentDashboard from '@/components/StudentDashboard';
-import ProfessionalDatabase from '@/components/ProfessionalDatabase';
 
 const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
@@ -101,10 +100,10 @@ const Index = () => {
       {/* Authentication Modal */}
       <AnimatePresence>
         {showAuth && (
-          <GovernmentAuthSystem
+          <AuthModal
             isOpen={showAuth}
             onClose={() => setShowAuth(false)}
-            initialType={authType === 'login' ? 'login' : 'student'}
+            initialType={authType}
             onAuthSuccess={handleAuthSuccess}
           />
         )}
