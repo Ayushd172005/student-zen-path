@@ -21,6 +21,10 @@ import {
   ArrowRight,
   Download
 } from 'lucide-react';
+import EnhancedTaskManager from './EnhancedTaskManager';
+import QuizSystem from './QuizSystem';
+import AchievementSystem from './AchievementSystem';
+import ResourceHub from './ResourceHub';
 import { useToast } from '@/hooks/use-toast';
 
 interface StudentDashboardProps {
@@ -207,12 +211,14 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout }) =
 
         {/* Main Content Tabs */}
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             <TabsTrigger value="flashcards">Flashcards</TabsTrigger>
             <TabsTrigger value="tasks">Tasks</TabsTrigger>
             <TabsTrigger value="quizzes">Quizzes</TabsTrigger>
             <TabsTrigger value="achievements">Achievements</TabsTrigger>
+            <TabsTrigger value="wellness">Wellness</TabsTrigger>
+            <TabsTrigger value="resources">Resources</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
@@ -331,160 +337,53 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ user, onLogout }) =
           </TabsContent>
 
           <TabsContent value="tasks" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Daily Tasks</CardTitle>
-                <p className="text-muted-foreground">Complete tasks to earn points and maintain your streak</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {tasks.map((task) => (
-                    <motion.div
-                      key={task.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className={`flex items-center justify-between p-4 rounded-lg border ${
-                        completedTasks.includes(task.id)
-                          ? 'bg-success/10 border-success/20'
-                          : 'bg-background border-border'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-4">
-                        <motion.button
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.9 }}
-                          onClick={() => handleCompleteTask(task.id, task.points)}
-                          disabled={completedTasks.includes(task.id)}
-                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                            completedTasks.includes(task.id)
-                              ? 'bg-success border-success'
-                              : 'border-muted-foreground hover:border-primary'
-                          }`}
-                        >
-                          {completedTasks.includes(task.id) && (
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          )}
-                        </motion.button>
-                        
-                        <div>
-                          <p className={`font-medium ${
-                            completedTasks.includes(task.id) ? 'line-through text-muted-foreground' : ''
-                          }`}>
-                            {task.title}
-                          </p>
-                          <Badge variant="secondary" className="text-xs">
-                            {task.category}
-                          </Badge>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        <span className="text-sm font-medium text-primary">+{task.points} pts</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <EnhancedTaskManager />
           </TabsContent>
 
           <TabsContent value="quizzes" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Knowledge Quizzes</CardTitle>
-                <p className="text-muted-foreground">Test your understanding and earn certificates</p>
-              </CardHeader>
-              <CardContent>
-                {quizzes.map((quiz) => (
-                  <div key={quiz.id} className="space-y-6">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl font-semibold">{quiz.title}</h3>
-                      <Button onClick={handleGenerateCertificate} className="flex items-center space-x-2">
-                        <Download className="w-4 h-4" />
-                        <span>Get Certificate</span>
-                      </Button>
-                    </div>
-                    
-                    {quiz.questions.map((question, qIndex) => (
-                      <div key={qIndex} className="space-y-4">
-                        <h4 className="font-medium">{question.question}</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                          {question.options.map((option, oIndex) => (
-                            <motion.button
-                              key={oIndex}
-                              whileHover={{ scale: 1.02 }}
-                              whileTap={{ scale: 0.98 }}
-                              onClick={() => handleQuizAnswer(qIndex, oIndex)}
-                              className={`p-3 text-left rounded-lg border transition-colors ${
-                                quizAnswers[qIndex] === oIndex
-                                  ? oIndex === question.correct
-                                    ? 'bg-success/10 border-success text-success-foreground'
-                                    : 'bg-destructive/10 border-destructive text-destructive-foreground'
-                                  : 'border-border hover:border-primary'
-                              }`}
-                            >
-                              {option}
-                            </motion.button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
+            <QuizSystem />
           </TabsContent>
 
           <TabsContent value="achievements" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Achievements & Badges</CardTitle>
-                <p className="text-muted-foreground">Your progress milestones and rewards</p>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {achievements.map((achievement) => {
-                    const IconComponent = achievement.icon;
-                    return (
-                      <motion.div
-                        key={achievement.id}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: achievement.id * 0.1 }}
-                        className={`p-6 rounded-lg border ${
-                          achievement.unlocked
-                            ? 'bg-primary/10 border-primary/20'
-                            : 'bg-muted/50 border-muted'
-                        }`}
-                      >
-                        <div className="flex items-center space-x-4">
-                          <div className={`p-3 rounded-full ${
-                            achievement.unlocked
-                              ? 'bg-primary text-primary-foreground'
-                              : 'bg-muted text-muted-foreground'
-                          }`}>
-                            <IconComponent className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <h3 className={`font-semibold ${
-                              achievement.unlocked ? 'text-foreground' : 'text-muted-foreground'
-                            }`}>
-                              {achievement.title}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {achievement.description}
-                            </p>
-                            {achievement.unlocked && (
-                              <Badge className="mt-2">Unlocked!</Badge>
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
+            <AchievementSystem />
+          </TabsContent>
+
+          <TabsContent value="wellness" className="space-y-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="wellness-card">
+                <CardHeader>
+                  <CardTitle>Pomodoro Timer</CardTitle>
+                  <p className="text-muted-foreground">Focus sessions with breaks</p>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">Start 25min Session</Button>
+                </CardContent>
+              </Card>
+              
+              <Card className="wellness-card">
+                <CardHeader>
+                  <CardTitle>Mood Tracker</CardTitle>
+                  <p className="text-muted-foreground">Track your daily mood</p>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">Log Today's Mood</Button>
+                </CardContent>
+              </Card>
+              
+              <Card className="wellness-card">
+                <CardHeader>
+                  <CardTitle>Breathing Exercise</CardTitle>
+                  <p className="text-muted-foreground">Guided breathing for calm</p>
+                </CardHeader>
+                <CardContent>
+                  <Button className="w-full">Start Breathing</Button>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="resources" className="space-y-6">
+            <ResourceHub />
           </TabsContent>
         </Tabs>
       </div>
