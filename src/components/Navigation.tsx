@@ -17,7 +17,7 @@ const Navigation: React.FC<NavigationProps> = ({ onShowAuth }) => {
     { id: 'counselor-booking', label: 'Counseling' },
     { id: 'resources', label: 'Resources' },
     { id: 'peer-support', label: 'Community' },
-    { id: 'admin', label: 'Admin' },
+    { id: 'counsellor', label: 'Counsellor' },
   ];
 
   useEffect(() => {
@@ -106,7 +106,7 @@ const Navigation: React.FC<NavigationProps> = ({ onShowAuth }) => {
               className="flex items-center space-x-2"
             >
               <Shield className="w-4 h-4" />
-              <span>Admin</span>
+              <span>Counsellor</span>
             </Button>
           </div>
 
@@ -159,7 +159,7 @@ const Navigation: React.FC<NavigationProps> = ({ onShowAuth }) => {
                   className="w-full justify-start"
                 >
                   <Shield className="w-4 h-4 mr-2" />
-                  Admin Login
+                  Counsellor Login
                 </Button>
               </div>
             </div>

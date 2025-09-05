@@ -20,10 +20,12 @@ import {
   Star,
   MapPin,
   Phone,
-  Video
+  Video,
+  Award,
+  Languages
 } from 'lucide-react';
 
-interface Counselor {
+interface Counsellor {
   id: string;
   name: string;
   title: string;
@@ -33,10 +35,14 @@ interface Counselor {
   image: string;
   experience: string;
   languages: string[];
+  education: string;
+  certifications: string[];
+  location: string;
+  sessionTypes: string[];
 }
 
 interface BookingForm {
-  counselorId: string;
+  counsellorId: string;
   sessionType: string;
   date: string;
   time: string;
@@ -50,9 +56,9 @@ interface BookingForm {
 
 const BookingSystem = () => {
   const { toast } = useToast();
-  const [selectedCounselor, setSelectedCounselor] = useState<string>('');
+  const [selectedCounsellor, setSelectedCounsellor] = useState<string>('');
   const [bookingForm, setBookingForm] = useState<BookingForm>({
-    counselorId: '',
+    counsellorId: '',
     sessionType: '',
     date: '',
     time: '',
@@ -65,63 +71,131 @@ const BookingSystem = () => {
   });
   const [isBooking, setIsBooking] = useState(false);
 
-  const counselors: Counselor[] = [
+  const counsellors: Counsellor[] = [
     {
       id: '1',
-      name: 'Dr. Sarah Chen',
+      name: 'Dr. Priya Sharma',
       title: 'Licensed Clinical Psychologist',
       specialties: ['Anxiety', 'Depression', 'Academic Stress', 'PTSD'],
       rating: 4.9,
       availability: ['Monday', 'Wednesday', 'Friday'],
-      image: '/api/placeholder/64/64',
+      image: 'https://images.pexels.com/photos/5327580/pexels-photo-5327580.jpeg?auto=compress&cs=tinysrgb&w=150',
       experience: '8 years',
-      languages: ['English', 'Mandarin']
+      languages: ['English', 'Hindi', 'Marathi'],
+      education: 'PhD Clinical Psychology, AIIMS Delhi',
+      certifications: ['RCI Licensed', 'CBT Certified', 'Trauma Specialist'],
+      location: 'Delhi',
+      sessionTypes: ['Individual', 'Group', 'Crisis']
     },
     {
       id: '2',
-      name: 'Dr. Michael Rodriguez',
-      title: 'Licensed Professional Counselor',
+      name: 'Dr. Rajesh Kumar',
+      title: 'Licensed Professional Counsellor',
       specialties: ['Relationship Issues', 'Substance Abuse', 'Grief', 'Trauma'],
       rating: 4.8,
       availability: ['Tuesday', 'Thursday', 'Saturday'],
-      image: '/api/placeholder/64/64',
+      image: 'https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=150',
       experience: '12 years',
-      languages: ['English', 'Spanish']
+      languages: ['English', 'Hindi', 'Punjabi'],
+      education: 'MA Psychology, JNU Delhi',
+      certifications: ['RCI Licensed', 'EMDR Certified', 'Addiction Counsellor'],
+      location: 'Mumbai',
+      sessionTypes: ['Individual', 'Couples', 'Family']
     },
     {
       id: '3',
-      name: 'Dr. Emily Johnson',
+      name: 'Dr. Anita Patel',
       title: 'Licensed Marriage & Family Therapist',
       specialties: ['Family Issues', 'Eating Disorders', 'Self-Esteem', 'Social Anxiety'],
       rating: 4.9,
       availability: ['Monday', 'Tuesday', 'Thursday'],
-      image: '/api/placeholder/64/64',
+      image: 'https://images.pexels.com/photos/5327656/pexels-photo-5327656.jpeg?auto=compress&cs=tinysrgb&w=150',
       experience: '10 years',
-      languages: ['English']
+      languages: ['English', 'Hindi', 'Gujarati'],
+      education: 'PhD Family Therapy, NIMHANS Bangalore',
+      certifications: ['RCI Licensed', 'Family Therapy Specialist', 'Eating Disorder Certified'],
+      location: 'Bangalore',
+      sessionTypes: ['Individual', 'Family', 'Group']
+    },
+    {
+      id: '4',
+      name: 'Dr. Vikram Singh',
+      title: 'Psychiatrist & Mental Health Specialist',
+      specialties: ['Bipolar Disorder', 'Schizophrenia', 'Medication Management', 'Crisis Intervention'],
+      rating: 4.7,
+      availability: ['Monday', 'Wednesday', 'Friday', 'Saturday'],
+      image: 'https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=150',
+      experience: '15 years',
+      languages: ['English', 'Hindi', 'Bengali'],
+      education: 'MD Psychiatry, PGI Chandigarh',
+      certifications: ['MCI Licensed', 'Addiction Medicine', 'Crisis Intervention'],
+      location: 'Kolkata',
+      sessionTypes: ['Individual', 'Crisis', 'Medication Consultation']
+    },
+    {
+      id: '5',
+      name: 'Dr. Meera Nair',
+      title: 'Child & Adolescent Psychologist',
+      specialties: ['Teen Counselling', 'Academic Pressure', 'Identity Issues', 'Peer Relationships'],
+      rating: 4.8,
+      availability: ['Tuesday', 'Thursday', 'Friday'],
+      image: 'https://images.pexels.com/photos/5327647/pexels-photo-5327647.jpeg?auto=compress&cs=tinysrgb&w=150',
+      experience: '9 years',
+      languages: ['English', 'Hindi', 'Malayalam', 'Tamil'],
+      education: 'PhD Developmental Psychology, University of Kerala',
+      certifications: ['RCI Licensed', 'Adolescent Specialist', 'Play Therapy'],
+      location: 'Chennai',
+      sessionTypes: ['Individual', 'Group', 'Family']
+    },
+    {
+      id: '6',
+      name: 'Dr. Arjun Reddy',
+      title: 'Cognitive Behavioral Therapist',
+      specialties: ['OCD', 'Phobias', 'Panic Disorders', 'Behavioral Issues'],
+      rating: 4.6,
+      availability: ['Monday', 'Tuesday', 'Wednesday', 'Friday'],
+      image: 'https://images.pexels.com/photos/5327584/pexels-photo-5327584.jpeg?auto=compress&cs=tinysrgb&w=150',
+      experience: '7 years',
+      languages: ['English', 'Hindi', 'Telugu', 'Kannada'],
+      education: 'MA Clinical Psychology, NIMHANS Bangalore',
+      certifications: ['RCI Licensed', 'CBT Specialist', 'Mindfulness Trainer'],
+      location: 'Hyderabad',
+      sessionTypes: ['Individual', 'Group']
     }
   ];
 
   const sessionTypes = [
     {
       id: 'individual',
-      name: 'Individual Counseling',
+      name: 'Individual Counselling',
       duration: '50 minutes',
-      description: 'One-on-one session with a licensed counselor',
-      icon: User
+      description: 'One-on-one session with a licensed counsellor',
+      icon: User,
+      fee: '₹800'
     },
     {
       id: 'group',
       name: 'Group Therapy',
       duration: '90 minutes',
       description: 'Small group session focused on specific topics',
-      icon: Users
+      icon: Users,
+      fee: '₹400'
     },
     {
       id: 'crisis',
       name: 'Crisis Intervention',
       duration: '30-60 minutes',
       description: 'Immediate support for urgent mental health concerns',
-      icon: Shield
+      icon: Shield,
+      fee: 'Free'
+    },
+    {
+      id: 'family',
+      name: 'Family Counselling',
+      duration: '60 minutes',
+      description: 'Family therapy sessions for relationship issues',
+      icon: Heart,
+      fee: '₹1200'
     }
   ];
 
@@ -135,7 +209,7 @@ const BookingSystem = () => {
   };
 
   const handleBooking = async () => {
-    if (!bookingForm.counselorId || !bookingForm.sessionType || !bookingForm.date || 
+    if (!bookingForm.counsellorId || !bookingForm.sessionType || !bookingForm.date || 
         !bookingForm.time || !bookingForm.studentName || !bookingForm.studentEmail) {
       toast({
         title: "Missing Information",
@@ -149,12 +223,13 @@ const BookingSystem = () => {
 
     // Simulate booking process
     setTimeout(() => {
-      const selectedCounselor = counselors.find(c => c.id === bookingForm.counselorId);
+      const selectedCounsellor = counsellors.find(c => c.id === bookingForm.counsellorId);
+      const selectedSession = sessionTypes.find(s => s.id === bookingForm.sessionType);
       const confirmationNumber = `MH${Date.now().toString().slice(-6)}`;
       
       toast({
         title: "Booking Confirmed!",
-        description: `Your session with ${selectedCounselor?.name} has been booked for ${bookingForm.date} at ${bookingForm.time}. Confirmation #: ${confirmationNumber}`,
+        description: `Your session with ${selectedCounsellor?.name} has been booked for ${bookingForm.date} at ${bookingForm.time}. Confirmation #: ${confirmationNumber}`,
       });
 
       // Show detailed confirmation
@@ -164,11 +239,12 @@ BOOKING CONFIRMATION RECEIPT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📅 Session Details:
-• Counselor: ${selectedCounselor?.name}
-• Type: ${sessionTypes.find(s => s.id === bookingForm.sessionType)?.name}
+• Counsellor: ${selectedCounsellor?.name}
+• Type: ${selectedSession?.name}
 • Date: ${bookingForm.date}
 • Time: ${bookingForm.time}
-• Duration: ${sessionTypes.find(s => s.id === bookingForm.sessionType)?.duration}
+• Duration: ${selectedSession?.duration}
+• Fee: ${selectedSession?.fee}
 
 👤 Student Information:
 • Name: ${bookingForm.studentName}
@@ -176,17 +252,17 @@ BOOKING CONFIRMATION RECEIPT
 • Student ID: ${bookingForm.studentId}
 
 📞 Contact Information:
-• Campus Counseling: (555) 123-4567
-• Emergency Crisis Line: 988
+• Campus Counselling: (011) 2659-1000
+• Emergency Crisis Line: 9152987821
 • Confirmation Number: ${confirmationNumber}
 
 ⚠️ Important Notes:
 • Please arrive 10 minutes early
-• Bring your student ID
-• Sessions are confidential and HIPAA compliant
+• Bring your student ID and Aadhaar card
+• Sessions are confidential and DPDP compliant
 • Cancellations require 24-hour notice
 
-If you need to reschedule or have questions, please contact our office at counseling@university.edu
+If you need to reschedule or have questions, please contact our office at counselling@university.edu
         `);
       }, 1000);
 
@@ -194,7 +270,7 @@ If you need to reschedule or have questions, please contact our office at counse
       
       // Reset form
       setBookingForm({
-        counselorId: '',
+        counsellorId: '',
         sessionType: '',
         date: '',
         time: '',
@@ -205,7 +281,7 @@ If you need to reschedule or have questions, please contact our office at counse
         previousTherapy: '',
         preferredContact: ''
       });
-      setSelectedCounselor('');
+      setSelectedCounsellor('');
     }, 2000);
   };
 
@@ -215,10 +291,10 @@ If you need to reschedule or have questions, please contact our office at counse
         <div className="text-center mb-12">
           <div className="inline-flex items-center bg-accent/20 text-accent px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Calendar className="w-4 h-4 mr-2" />
-            Professional Counseling Services
+            Professional Counselling Services
           </div>
           <h2 className="text-3xl font-bold text-foreground mb-4">
-            Book Your Counseling Session
+            Book Your Counselling Session
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Connect with licensed mental health professionals who understand student life. 
@@ -227,66 +303,74 @@ If you need to reschedule or have questions, please contact our office at counse
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Counselor Selection */}
+          {/* Counsellor Selection */}
           <div className="space-y-6">
             <Card className="wellness-card">
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <GraduationCap className="w-5 h-5 mr-2" />
-                  Choose Your Counselor
+                  Choose Your Counsellor
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {counselors.map((counselor) => (
+                {counsellors.map((counsellor) => (
                   <div
-                    key={counselor.id}
+                    key={counsellor.id}
                     className={`p-4 border rounded-lg cursor-pointer transition-all ${
-                      selectedCounselor === counselor.id 
+                      selectedCounsellor === counsellor.id 
                         ? 'border-primary bg-primary/5' 
                         : 'border-border hover:border-primary/50'
                     }`}
                     onClick={() => {
-                      setSelectedCounselor(counselor.id);
-                      handleInputChange('counselorId', counselor.id);
+                      setSelectedCounsellor(counsellor.id);
+                      handleInputChange('counsellorId', counsellor.id);
                     }}
                   >
                     <div className="flex items-start space-x-4">
                       <Avatar className="w-16 h-16">
-                        <AvatarImage src={counselor.image} alt={counselor.name} />
-                        <AvatarFallback>{counselor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
+                        <AvatarImage src={counsellor.image} alt={counsellor.name} />
+                        <AvatarFallback>{counsellor.name.split(' ').map(n => n[0]).join('')}</AvatarFallback>
                       </Avatar>
                       
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
-                          <h3 className="font-semibold text-lg">{counselor.name}</h3>
+                          <h3 className="font-semibold text-lg">{counsellor.name}</h3>
                           <div className="flex items-center text-warning">
                             <Star className="w-4 h-4 fill-current mr-1" />
-                            <span className="text-sm font-medium">{counselor.rating}</span>
+                            <span className="text-sm font-medium">{counsellor.rating}</span>
                           </div>
                         </div>
                         
-                        <p className="text-muted-foreground text-sm mb-3">{counselor.title}</p>
+                        <p className="text-muted-foreground text-sm mb-2">{counsellor.title}</p>
+                        <p className="text-xs text-muted-foreground mb-3">{counsellor.education}</p>
                         
                         <div className="flex flex-wrap gap-2 mb-3">
-                          {counselor.specialties.map((specialty, index) => (
+                          {counsellor.specialties.slice(0, 3).map((specialty, index) => (
                             <Badge key={index} variant="secondary" className="text-xs">
                               {specialty}
                             </Badge>
                           ))}
                         </div>
                         
-                        <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
-                          <div>
-                            <span className="font-medium">Experience:</span> {counselor.experience}
+                        <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground mb-2">
+                          <div className="flex items-center">
+                            <Award className="w-3 h-3 mr-1" />
+                            <span>{counsellor.experience} experience</span>
                           </div>
-                          <div>
-                            <span className="font-medium">Languages:</span> {counselor.languages.join(', ')}
+                          <div className="flex items-center">
+                            <MapPin className="w-3 h-3 mr-1" />
+                            <span>{counsellor.location}</span>
                           </div>
+                        </div>
+                        
+                        <div className="flex items-center text-xs text-muted-foreground mb-2">
+                          <Languages className="w-3 h-3 mr-1" />
+                          <span>{counsellor.languages.join(', ')}</span>
                         </div>
                         
                         <div className="mt-2">
                           <span className="text-xs font-medium text-muted-foreground">Available: </span>
-                          <span className="text-xs text-success">{counselor.availability.join(', ')}</span>
+                          <span className="text-xs text-success">{counsellor.availability.join(', ')}</span>
                         </div>
                       </div>
                     </div>
@@ -317,7 +401,10 @@ If you need to reschedule or have questions, please contact our office at counse
                     <div className="flex items-center space-x-3">
                       <type.icon className="w-8 h-8 text-primary" />
                       <div className="flex-1">
-                        <h4 className="font-medium">{type.name}</h4>
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-medium">{type.name}</h4>
+                          <Badge variant="outline" className="text-xs">{type.fee}</Badge>
+                        </div>
                         <p className="text-sm text-muted-foreground">{type.description}</p>
                         <div className="flex items-center mt-1">
                           <Clock className="w-3 h-3 mr-1 text-muted-foreground" />
@@ -436,7 +523,7 @@ If you need to reschedule or have questions, please contact our office at counse
                       <SelectContent>
                         <SelectItem value="email">Email</SelectItem>
                         <SelectItem value="phone">Phone</SelectItem>
-                        <SelectItem value="text">Text Message</SelectItem>
+                        <SelectItem value="whatsapp">WhatsApp</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -475,14 +562,14 @@ If you need to reschedule or have questions, please contact our office at counse
                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div className="flex items-center">
                     <Phone className="w-4 h-4 mr-2 text-muted-foreground" />
-                    <span className="text-sm">Campus Counseling Center</span>
+                    <span className="text-sm">Campus Counselling Center</span>
                   </div>
                   <Button 
                     variant="outline" 
                     size="sm"
-                    onClick={() => window.open('tel:555-123-4567')}
+                    onClick={() => window.open('tel:+91-11-2659-1000')}
                   >
-                    (555) 123-4567
+                    (011) 2659-1000
                   </Button>
                 </div>
                 
@@ -500,6 +587,20 @@ If you need to reschedule or have questions, please contact our office at counse
                     <span className="text-sm">Student Health Center, 2nd Floor</span>
                   </div>
                   <Badge variant="outline">Walk-ins Welcome</Badge>
+                </div>
+
+                <div className="flex items-center justify-between p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+                  <div className="flex items-center">
+                    <AlertTriangle className="w-4 h-4 mr-2 text-destructive" />
+                    <span className="text-sm font-medium">Crisis Helpline</span>
+                  </div>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    onClick={() => window.open('tel:9152987821')}
+                  >
+                    9152987821
+                  </Button>
                 </div>
               </CardContent>
             </Card>

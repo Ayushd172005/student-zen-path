@@ -23,7 +23,9 @@ import {
   CheckCircle2,
   User,
   Crown,
-  FileText
+  FileText,
+  Upload,
+  X
 } from 'lucide-react';
 
 interface Message {
@@ -36,6 +38,8 @@ interface Message {
   type: 'text' | 'file' | 'image';
   isRead: boolean;
   isMentor?: boolean;
+  fileUrl?: string;
+  fileName?: string;
 }
 
 interface Discussion {
@@ -52,15 +56,6 @@ interface Discussion {
   isActive: boolean;
 }
 
-interface ChatSession {
-  mentorId: string;
-  mentorName: string;
-  mentorAvatar: string;
-  specialties: string[];
-  isOnline: boolean;
-  messages: Message[];
-}
-
 const PeerSupport = () => {
   const { toast } = useToast();
   const [activeTab, setActiveTab] = useState<'community' | 'mentors'>('community');
@@ -71,7 +66,10 @@ const PeerSupport = () => {
   const [chatMessage, setChatMessage] = useState('');
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showFileUpload, setShowFileUpload] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -96,8 +94,8 @@ const PeerSupport = () => {
       id: '1',
       title: 'How do you manage exam anxiety?',
       category: 'anxiety',
-      author: 'Sarah M.',
-      authorAvatar: '/api/placeholder/32/32',
+      author: 'Priya M.',
+      authorAvatar: 'https://images.pexels.com/photos/5327580/pexels-photo-5327580.jpeg?auto=compress&cs=tinysrgb&w=50',
       content: 'Finals are coming up and I feel overwhelmed. What techniques have helped you stay calm during exams?',
       replies: 23,
       likes: 45,
@@ -109,8 +107,8 @@ const PeerSupport = () => {
       id: '2',
       title: 'Study group success stories',
       category: 'academic',
-      author: 'Mike R.',
-      authorAvatar: '/api/placeholder/32/32',
+      author: 'Rahul K.',
+      authorAvatar: 'https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=50',
       content: 'Started a study group for organic chemistry and it changed everything! Anyone else have positive group study experiences?',
       replies: 17,
       likes: 32,
@@ -122,8 +120,8 @@ const PeerSupport = () => {
       id: '3',
       title: 'Dealing with homesickness as a freshman',
       category: 'social',
-      author: 'Emma L.',
-      authorAvatar: '/api/placeholder/32/32',
+      author: 'Sneha L.',
+      authorAvatar: 'https://images.pexels.com/photos/5327656/pexels-photo-5327656.jpeg?auto=compress&cs=tinysrgb&w=50',
       content: 'Missing home more than I expected. How did you adjust to college life away from family?',
       replies: 31,
       likes: 67,
@@ -135,8 +133,8 @@ const PeerSupport = () => {
       id: '4',
       title: 'Sleep schedule completely messed up',
       category: 'sleep',
-      author: 'Alex K.',
-      authorAvatar: '/api/placeholder/32/32',
+      author: 'Arjun S.',
+      authorAvatar: 'https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&w=50',
       content: 'Been staying up until 3am and sleeping through morning classes. Any tips for fixing my sleep cycle?',
       replies: 28,
       likes: 41,
@@ -149,8 +147,8 @@ const PeerSupport = () => {
   const mentors = [
     {
       id: '1',
-      name: 'Jessica Chen',
-      avatar: '/api/placeholder/48/48',
+      name: 'Kavya Sharma',
+      avatar: 'https://images.pexels.com/photos/5327580/pexels-photo-5327580.jpeg?auto=compress&cs=tinysrgb&w=100',
       specialties: ['Anxiety', 'Academic Stress', 'Time Management'],
       year: 'Senior Psychology Major',
       isOnline: true,
@@ -159,8 +157,8 @@ const PeerSupport = () => {
     },
     {
       id: '2',
-      name: 'Marcus Williams',
-      avatar: '/api/placeholder/48/48',
+      name: 'Aditya Verma',
+      avatar: 'https://images.pexels.com/photos/5327921/pexels-photo-5327921.jpeg?auto=compress&cs=tinysrgb&w=100',
       specialties: ['Depression', 'Social Skills', 'Motivation'],
       year: 'Graduate Student',
       isOnline: true,
@@ -169,8 +167,8 @@ const PeerSupport = () => {
     },
     {
       id: '3',
-      name: 'Priya Patel',
-      avatar: '/api/placeholder/48/48',
+      name: 'Ananya Gupta',
+      avatar: 'https://images.pexels.com/photos/5327656/pexels-photo-5327656.jpeg?auto=compress&cs=tinysrgb&w=100',
       specialties: ['Relationships', 'Self-Esteem', 'Cultural Issues'],
       year: 'Senior Social Work Major',
       isOnline: false,
@@ -204,7 +202,6 @@ const PeerSupport = () => {
 
   const handleStartChat = (mentorId: string) => {
     setActiveChatMentor(mentorId);
-    // Initialize chat with welcome message
     const welcomeMessage: Message = {
       id: '1',
       userId: mentorId,
@@ -219,6 +216,66 @@ const PeerSupport = () => {
     setChatMessages([welcomeMessage]);
   };
 
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast({
+          title: "File too large",
+          description: "Please select a file smaller than 10MB",
+          variant: "destructive"
+        });
+        return;
+      }
+      setSelectedFile(file);
+      setShowFileUpload(true);
+    }
+  };
+
+  const handleFileUpload = () => {
+    if (!selectedFile || !activeChatMentor) return;
+    
+    const fileMessage: Message = {
+      id: Date.now().toString(),
+      userId: 'current-user',
+      userName: 'You',
+      userAvatar: 'https://images.pexels.com/photos/5327647/pexels-photo-5327647.jpeg?auto=compress&cs=tinysrgb&w=50',
+      content: `Shared: ${selectedFile.name}`,
+      timestamp: new Date(),
+      type: selectedFile.type.startsWith('image/') ? 'image' : 'file',
+      isRead: true,
+      fileName: selectedFile.name,
+      fileUrl: URL.createObjectURL(selectedFile)
+    };
+
+    setChatMessages(prev => [...prev, fileMessage]);
+    setSelectedFile(null);
+    setShowFileUpload(false);
+    
+    toast({
+      title: '📎 File Shared',
+      description: `${selectedFile.name} has been shared with your mentor`,
+    });
+
+    // Simulate mentor response
+    setTimeout(() => {
+      const mentor = mentors.find(m => m.id === activeChatMentor);
+      const mentorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        userId: activeChatMentor,
+        userName: mentor?.name || 'Mentor',
+        userAvatar: mentor?.avatar || '',
+        content: "Thank you for sharing that with me. I can see the file you've uploaded. This will help me better understand your situation.",
+        timestamp: new Date(),
+        type: 'text',
+        isRead: false,
+        isMentor: true
+      };
+
+      setChatMessages(prev => [...prev, mentorMessage]);
+    }, 2000);
+  };
+
   const handleSendMessage = () => {
     if (!chatMessage.trim() || !activeChatMentor) return;
 
@@ -226,7 +283,7 @@ const PeerSupport = () => {
       id: Date.now().toString(),
       userId: 'current-user',
       userName: 'You',
-      userAvatar: '/api/placeholder/32/32',
+      userAvatar: 'https://images.pexels.com/photos/5327647/pexels-photo-5327647.jpeg?auto=compress&cs=tinysrgb&w=50',
       content: chatMessage,
       timestamp: new Date(),
       type: 'text',
@@ -244,7 +301,7 @@ const PeerSupport = () => {
         "That sounds really challenging. Can you tell me more about what specifically is causing you stress?",
         "I understand how you're feeling. Many students go through similar experiences. What coping strategies have you tried so far?",
         "Thank you for sharing that with me. It takes courage to open up about these feelings. Let's work together on some techniques that might help.",
-        "That's a very common concern among college students. Have you considered talking to a counselor about this as well?",
+        "That's a very common concern among college students. Have you considered talking to a counsellor about this as well?",
         "I appreciate you trusting me with this. Let's break this down into smaller, manageable steps."
       ];
 
@@ -263,23 +320,6 @@ const PeerSupport = () => {
       setChatMessages(prev => [...prev, mentorMessage]);
       setIsTyping(false);
     }, 2000);
-  };
-
-  const handleFileShare = () => {
-    if (!activeChatMentor) return;
-    
-    const fileMessage: Message = {
-      id: Date.now().toString(),
-      userId: 'current-user',
-      userName: 'You',
-      userAvatar: '/api/placeholder/32/32',
-      content: 'Shared: relaxation-techniques.pdf',
-      timestamp: new Date(),
-      type: 'file',
-      isRead: true
-    };
-
-    setChatMessages(prev => [...prev, fileMessage]);
   };
 
   return (
@@ -483,16 +523,6 @@ const PeerSupport = () => {
                   </Card>
                 ))}
               </div>
-
-              {/* Load More */}
-              <div className="text-center mt-8">
-                <Button 
-                  variant="outline"
-                  onClick={() => toast({ title: "Loading...", description: "More discussions are being loaded!" })}
-                >
-                  Load More Discussions
-                </Button>
-              </div>
             </div>
           </div>
         )}
@@ -606,7 +636,17 @@ const PeerSupport = () => {
                                 {message.type === 'file' && (
                                   <div className="flex items-center mt-2 p-2 bg-muted rounded text-xs">
                                     <FileText className="w-4 h-4 mr-2" />
-                                    <span>Document shared</span>
+                                    <span>{message.fileName}</span>
+                                  </div>
+                                )}
+                                {message.type === 'image' && message.fileUrl && (
+                                  <div className="mt-2">
+                                    <img 
+                                      src={message.fileUrl} 
+                                      alt="Shared image" 
+                                      className="max-w-full h-auto rounded"
+                                      style={{ maxHeight: '200px' }}
+                                    />
                                   </div>
                                 )}
                                 {!message.isRead && !message.isMentor && (
@@ -638,13 +678,74 @@ const PeerSupport = () => {
                       <div ref={messagesEndRef} />
                     </div>
 
+                    {/* File Upload Modal */}
+                    {showFileUpload && selectedFile && (
+                      <div className="mb-4 p-3 bg-muted rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Upload File</span>
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => {
+                              setShowFileUpload(false);
+                              setSelectedFile(null);
+                            }}
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        <div className="flex items-center space-x-2 mb-3">
+                          {selectedFile.type.startsWith('image/') ? (
+                            <Image className="w-4 h-4 text-primary" />
+                          ) : (
+                            <FileText className="w-4 h-4 text-primary" />
+                          )}
+                          <span className="text-sm">{selectedFile.name}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </Badge>
+                        </div>
+                        <Button onClick={handleFileUpload} size="sm" className="w-full">
+                          <Upload className="w-4 h-4 mr-2" />
+                          Share with Mentor
+                        </Button>
+                      </div>
+                    )}
+
                     {/* Message Input */}
                     <div className="flex-shrink-0">
                       <div className="flex space-x-2 mb-2">
-                        <Button variant="outline" size="sm" onClick={handleFileShare}>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          onChange={handleFileSelect}
+                          accept="image/*,.pdf,.doc,.docx,.txt"
+                          className="hidden"
+                        />
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => fileInputRef.current?.click()}
+                        >
                           <Paperclip className="w-4 h-4" />
                         </Button>
-                        <Button variant="outline" size="sm">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => {
+                            const input = document.createElement('input');
+                            input.type = 'file';
+                            input.accept = 'image/*';
+                            input.onchange = (e) => {
+                              const file = (e.target as HTMLInputElement).files?.[0];
+                              if (file) {
+                                setSelectedFile(file);
+                                setShowFileUpload(true);
+                              }
+                            };
+                            input.click();
+                          }}
+                        >
                           <Image className="w-4 h-4" />
                         </Button>
                       </div>
