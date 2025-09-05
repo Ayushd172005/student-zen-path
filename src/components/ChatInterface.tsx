@@ -312,7 +312,7 @@ const ChatInterface = () => {
           </div>
           <p>
             This AI provides support and information but is not a replacement for professional mental health care. 
-            In emergencies, please call 9152987821 (National Suicide Prevention Helpline) or visit your nearest emergency room.
+            In emergencies, please call 988 or visit your nearest emergency room.
           </p>
         </div>
       </div>

@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/hooks/use-toast';
 import { 
   BookOpen, 
   Download, 
@@ -20,10 +19,7 @@ import {
   Heart,
   Shield,
   Users,
-  Zap,
-  Pause,
-  SkipForward,
-  VolumeX
+  Zap
 } from 'lucide-react';
 
 interface Resource {
@@ -37,17 +33,12 @@ interface Resource {
   downloads: number;
   tags: string[];
   featured?: boolean;
-  audioUrl?: string;
 }
 
 const ResourceHub = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedType, setSelectedType] = useState('all');
-  const [currentAudio, setCurrentAudio] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [audioProgress, setAudioProgress] = useState(0);
-  const { toast } = useToast();
 
   const resources: Resource[] = [
     {
@@ -70,8 +61,7 @@ const ResourceHub = () => {
       duration: '20 min',
       rating: 4.9,
       downloads: 3210,
-      tags: ['meditation', 'mindfulness', 'relaxation', 'focus'],
-      audioUrl: 'meditation-audio'
+      tags: ['meditation', 'mindfulness', 'relaxation', 'focus']
     },
     {
       id: '3',
@@ -114,8 +104,7 @@ const ResourceHub = () => {
       duration: '25 min',
       rating: 4.9,
       downloads: 2876,
-      tags: ['relaxation', 'tension', 'body', 'calming'],
-      audioUrl: 'relaxation-audio'
+      tags: ['relaxation', 'tension', 'body', 'calming']
     },
     {
       id: '7',
@@ -138,30 +127,6 @@ const ResourceHub = () => {
       downloads: 987,
       tags: ['crisis', 'safety', 'planning', 'emergency'],
       featured: true
-    },
-    {
-      id: '9',
-      title: 'Ocean Waves for Deep Focus',
-      description: 'Calming ocean sounds to enhance concentration and reduce study stress.',
-      type: 'audio',
-      category: 'focus',
-      duration: '60 min',
-      rating: 4.7,
-      downloads: 3456,
-      tags: ['focus', 'concentration', 'nature-sounds', 'study'],
-      audioUrl: 'ocean-waves'
-    },
-    {
-      id: '10',
-      title: 'Forest Rain Meditation',
-      description: 'Peaceful rain sounds combined with gentle forest ambiance for relaxation.',
-      type: 'audio',
-      category: 'relaxation',
-      duration: '45 min',
-      rating: 4.8,
-      downloads: 2987,
-      tags: ['rain', 'forest', 'meditation', 'peace'],
-      audioUrl: 'forest-rain'
     }
   ];
 
@@ -174,9 +139,7 @@ const ResourceHub = () => {
     { id: 'sleep', name: 'Sleep Health', icon: Clock },
     { id: 'relationships', name: 'Relationships', icon: Users },
     { id: 'self-help', name: 'Self-Help Tools', icon: Star },
-    { id: 'crisis', name: 'Crisis Support', icon: Shield },
-    { id: 'focus', name: 'Focus & Study', icon: Target },
-    { id: 'relaxation', name: 'Relaxation', icon: Heart }
+    { id: 'crisis', name: 'Crisis Support', icon: Shield }
   ];
 
   const resourceTypes = [
@@ -210,55 +173,6 @@ const ResourceHub = () => {
     }
   };
 
-  const playAudio = (resource: Resource) => {
-    if (resource.audioUrl) {
-      setCurrentAudio(resource.id);
-      setIsPlaying(true);
-      setAudioProgress(0);
-      
-      // Simulate audio playback
-      const duration = parseInt(resource.duration?.split(' ')[0] || '20') * 60; // Convert to seconds
-      const interval = setInterval(() => {
-        setAudioProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setIsPlaying(false);
-            setCurrentAudio(null);
-            toast({
-              title: '🎵 Audio Complete',
-              description: `Finished playing "${resource.title}"`,
-            });
-            return 100;
-          }
-          return prev + (100 / duration);
-        });
-      }, 1000);
-
-      toast({
-        title: '🎵 Now Playing',
-        description: `"${resource.title}" - ${resource.duration}`,
-      });
-    }
-  };
-
-  const pauseAudio = () => {
-    setIsPlaying(false);
-    toast({
-      title: '⏸️ Audio Paused',
-      description: 'Audio playback paused',
-    });
-  };
-
-  const stopAudio = () => {
-    setCurrentAudio(null);
-    setIsPlaying(false);
-    setAudioProgress(0);
-    toast({
-      title: '⏹️ Audio Stopped',
-      description: 'Audio playback stopped',
-    });
-  };
-
   const handleResourceDownload = (resource: Resource) => {
     if (resource.type === 'video') {
       window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
@@ -266,7 +180,8 @@ const ResourceHub = () => {
     }
     
     if (resource.type === 'audio') {
-      playAudio(resource);
+      // Simulate audio playback
+      alert(`Now playing: "${resource.title}"\n\nThis would typically open in your default audio player or stream directly in the browser.`);
       return;
     }
     
@@ -276,22 +191,18 @@ Sample ${resource.type.toUpperCase()}: ${resource.title}
 
 ${resource.description}
 
-This is a comprehensive resource containing:
+This is a sample document. In a real implementation, this would contain:
 - Detailed information about ${resource.category}
 - Practical exercises and techniques
 - Evidence-based strategies
 - Professional resources and references
-- Indian context and cultural considerations
 
 Tags: ${resource.tags.join(', ')}
 Rating: ${resource.rating}/5 stars
 Downloads: ${resource.downloads.toLocaleString()}
 
 For the complete resource, this would be a professionally designed PDF 
-with comprehensive content, exercises, and visual aids tailored for 
-Indian college students.
-
-Contact: resources@studentzenpath.edu for more information.
+with comprehensive content, exercises, and visual aids.
     `;
     
     const blob = new Blob([sampleContent], { type: 'text/plain' });
@@ -301,11 +212,6 @@ Contact: resources@studentzenpath.edu for more information.
     link.download = `${resource.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.txt`;
     link.click();
     URL.revokeObjectURL(url);
-
-    toast({
-      title: '📥 Download Started',
-      description: `"${resource.title}" is being downloaded`,
-    });
   };
 
   return (
@@ -321,48 +227,9 @@ Contact: resources@studentzenpath.edu for more information.
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Access our comprehensive library of mental health guides, videos, audio content, and interactive worksheets. 
-            All resources are evidence-based and tailored for Indian student life.
+            All resources are evidence-based and tailored for student life.
           </p>
         </div>
-
-        {/* Audio Player */}
-        {currentAudio && (
-          <Card className="wellness-card mb-8">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <Headphones className="w-6 h-6 text-primary" />
-                  <div>
-                    <p className="font-medium">
-                      {resources.find(r => r.id === currentAudio)?.title}
-                    </p>
-                    <div className="flex items-center space-x-2">
-                      <Progress value={audioProgress} className="w-32 h-2" />
-                      <span className="text-xs text-muted-foreground">
-                        {Math.round(audioProgress)}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  {isPlaying ? (
-                    <Button onClick={pauseAudio} size="sm">
-                      <Pause className="w-4 h-4" />
-                    </Button>
-                  ) : (
-                    <Button onClick={() => setIsPlaying(true)} size="sm">
-                      <Play className="w-4 h-4" />
-                    </Button>
-                  )}
-                  <Button onClick={stopAudio} variant="outline" size="sm">
-                    <VolumeX className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
 
         {/* Featured Resources */}
         <div className="mb-12">
@@ -505,8 +372,6 @@ Contact: resources@studentzenpath.edu for more information.
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredResources.map((resource) => {
             const ResourceIcon = getResourceIcon(resource.type);
-            const isCurrentlyPlaying = currentAudio === resource.id && isPlaying;
-            
             return (
               <Card key={resource.id} className="wellness-card h-full flex flex-col">
                 <CardHeader className="flex-shrink-0">
@@ -516,9 +381,6 @@ Contact: resources@studentzenpath.edu for more information.
                       <Badge variant="outline" className="text-xs">
                         {resource.type}
                       </Badge>
-                      {isCurrentlyPlaying && (
-                        <Badge className="bg-success text-xs">Playing</Badge>
-                      )}
                     </div>
                     <div className="flex items-center text-xs text-muted-foreground">
                       <Star className="w-3 h-3 mr-1 text-warning fill-current" />
@@ -554,60 +416,28 @@ Contact: resources@studentzenpath.edu for more information.
                     ))}
                   </div>
                   
-                  {currentAudio === resource.id && (
-                    <div className="mb-4">
-                      <Progress value={audioProgress} className="h-2" />
-                      <div className="flex justify-between text-xs text-muted-foreground mt-1">
-                        <span>Playing...</span>
-                        <span>{Math.round(audioProgress)}%</span>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="flex gap-2 mt-auto">
-                    <Button 
-                      variant="outline" 
-                      className="flex-1"
-                      onClick={() => handleResourceDownload(resource)}
-                    >
-                      {resource.type === 'video' ? (
-                        <>
-                          <Play className="w-4 h-4 mr-2" />
-                          Watch
-                        </>
-                      ) : resource.type === 'audio' ? (
-                        currentAudio === resource.id ? (
-                          isPlaying ? (
-                            <>
-                              <Pause className="w-4 h-4 mr-2" />
-                              Pause
-                            </>
-                          ) : (
-                            <>
-                              <Play className="w-4 h-4 mr-2" />
-                              Resume
-                            </>
-                          )
-                        ) : (
-                          <>
-                            <Volume2 className="w-4 h-4 mr-2" />
-                            Play
-                          </>
-                        )
-                      ) : (
-                        <>
-                          <Download className="w-4 h-4 mr-2" />
-                          Download
-                        </>
-                      )}
-                    </Button>
-                    
-                    {resource.type === 'audio' && currentAudio === resource.id && (
-                      <Button onClick={stopAudio} variant="outline" size="sm">
-                        <VolumeX className="w-4 h-4" />
-                      </Button>
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-auto"
+                    onClick={() => handleResourceDownload(resource)}
+                  >
+                    {resource.type === 'video' ? (
+                      <>
+                        <Play className="w-4 h-4 mr-2" />
+                        Watch
+                      </>
+                    ) : resource.type === 'audio' ? (
+                      <>
+                        <Volume2 className="w-4 h-4 mr-2" />
+                        Play
+                      </>
+                    ) : (
+                      <>
+                        <Download className="w-4 h-4 mr-2" />
+                        Download
+                      </>
                     )}
-                  </div>
+                  </Button>
                 </CardContent>
               </Card>
             );
@@ -623,78 +453,6 @@ Contact: resources@studentzenpath.edu for more information.
             </p>
           </div>
         )}
-
-        {/* Wellness Tools Section */}
-        <div className="mt-16">
-          <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center">
-            <Zap className="w-6 h-6 mr-2 text-primary" />
-            Interactive Wellness Tools
-          </h3>
-          <div className="grid md:grid-cols-3 gap-6">
-            <Card className="wellness-card">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Clock className="w-5 h-5 mr-2 text-primary" />
-                  Pomodoro Timer
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Boost productivity with focused 25-minute work sessions followed by short breaks.
-                </p>
-                <Button 
-                  className="w-full bg-gradient-healing hover:opacity-90"
-                  onClick={() => toast({ title: 'Pomodoro Timer', description: 'Switch to Wellness tab to use the Pomodoro timer!' })}
-                >
-                  <Play className="w-4 h-4 mr-2" />
-                  Start Focus Session
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card className="wellness-card">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Heart className="w-5 h-5 mr-2 text-primary" />
-                  Mood Tracker
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Track your daily emotions and identify patterns in your mental health journey.
-                </p>
-                <Button 
-                  className="w-full bg-gradient-support hover:opacity-90"
-                  onClick={() => toast({ title: 'Mood Tracker', description: 'Switch to Wellness tab to log your mood!' })}
-                >
-                  <Brain className="w-4 h-4 mr-2" />
-                  Log Today's Mood
-                </Button>
-              </CardContent>
-            </Card>
-            
-            <Card className="wellness-card">
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Zap className="w-5 h-5 mr-2 text-primary" />
-                  Breathing Exercise
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-muted-foreground text-sm mb-4">
-                  Practice guided breathing exercises to reduce anxiety and promote relaxation.
-                </p>
-                <Button 
-                  className="w-full bg-gradient-calm hover:opacity-90"
-                  onClick={() => toast({ title: 'Breathing Exercise', description: 'Switch to Wellness tab to start breathing exercises!' })}
-                >
-                  <Heart className="w-4 h-4 mr-2" />
-                  Start Breathing
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
 
         {/* Resource Categories Info */}
         <div className="mt-16 grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -723,7 +481,7 @@ Contact: resources@studentzenpath.edu for more information.
               <Headphones className="w-12 h-12 text-accent mx-auto mb-4" />
               <h4 className="font-semibold mb-2">Audio Resources</h4>
               <p className="text-sm text-muted-foreground">
-                Guided meditations, relaxation exercises, and calming soundscapes
+                Guided meditations, relaxation exercises, and audio therapy sessions
               </p>
             </CardContent>
           </Card>

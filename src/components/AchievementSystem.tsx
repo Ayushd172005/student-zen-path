@@ -647,13 +647,59 @@ const AchievementSystem: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="leaderboard" className="space-y-6">
-          <div className="text-center py-12">
-            <Trophy className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">Personal Achievement Focus</h3>
-            <p className="text-muted-foreground">
-              We focus on your personal growth journey rather than competition. Every achievement is a step forward in your mental wellness path.
-            </p>
-          </div>
+          <Card className="wellness-card">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <Trophy className="w-6 h-6 text-warning" />
+                <span>Achievement Leaderboard</span>
+              </CardTitle>
+              <p className="text-muted-foreground">See how you rank among other students</p>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {leaderboard.map((entry, index) => (
+                  <motion.div
+                    key={entry.rank}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className={`flex items-center justify-between p-4 rounded-lg ${
+                      entry.isCurrentUser ? 'bg-primary/10 border border-primary/20' : 'bg-muted/50'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-4">
+                      <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
+                        entry.rank === 1 ? 'bg-yellow-500' :
+                        entry.rank === 2 ? 'bg-gray-400' :
+                        entry.rank === 3 ? 'bg-amber-600' :
+                        'bg-muted'
+                      } text-white font-bold`}>
+                        {entry.rank <= 3 ? (
+                          entry.rank === 1 ? '🥇' :
+                          entry.rank === 2 ? '🥈' : '🥉'
+                        ) : entry.rank}
+                      </div>
+                      <div className="text-2xl">{entry.avatar}</div>
+                      <div>
+                        <p className={`font-medium ${entry.isCurrentUser ? 'text-primary' : ''}`}>
+                          {entry.username}
+                          {entry.isCurrentUser && <span className="text-xs ml-1">(You)</span>}
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {entry.achievements} achievements
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="text-right">
+                      <p className="font-bold text-lg">{entry.points.toLocaleString()}</p>
+                      <p className="text-xs text-muted-foreground">points</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         <TabsContent value="rewards" className="space-y-6">

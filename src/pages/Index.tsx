@@ -31,7 +31,7 @@ import ChatInterface from '@/components/ChatInterface';
 import BookingSystem from '@/components/BookingSystem';
 import ResourceHub from '@/components/ResourceHub';
 import PeerSupport from '@/components/PeerSupport';
-import CounsellorDashboard from '@/components/CounsellorDashboard';
+import AdminDashboard from '@/components/AdminDashboard';
 import Navigation from '@/components/Navigation';
 import AuthModal from '@/components/AuthModal';
 import StudentDashboard from '@/components/StudentDashboard';
@@ -40,7 +40,7 @@ const Index = () => {
   const [showAuth, setShowAuth] = useState(false);
   const [authType, setAuthType] = useState<'login' | 'signup'>('login');
   const [currentUser, setCurrentUser] = useState<{ name: string; email: string; role: string } | null>(null);
-  const [showCounsellor, setShowCounsellor] = useState(false);
+  const [showAdmin, setShowAdmin] = useState(false);
 
   // Animation hooks for sections
   const [heroRef, heroInView] = useInView({ threshold: 0.1, triggerOnce: true });
@@ -72,10 +72,10 @@ const Index = () => {
   if (currentUser) {
     if (currentUser.role === 'student') {
       return <StudentDashboard user={currentUser} onLogout={handleLogout} />;
-    } else if (currentUser.role === 'counsellor') {
+    } else if (currentUser.role === 'admin') {
       return (
         <div className="min-h-screen bg-background">
-          <CounsellorDashboard />
+          <AdminDashboard />
           <div className="fixed top-4 right-4 z-50">
             <Button variant="outline" onClick={handleLogout}>
               Sign Out
@@ -87,9 +87,9 @@ const Index = () => {
   }
 
   const crisisHotlines = [
-    { name: "National Suicide Prevention Helpline", number: "9152987821" },
-    { name: "Campus Safety", number: "(011) 2659-1000" },
-    { name: "Student Wellness", number: "(011) 2659-1001" }
+    { name: "National Crisis Line", number: "988" },
+    { name: "Campus Safety", number: "555-0123" },
+    { name: "Student Wellness", number: "555-0124" }
   ];
 
   return (
@@ -430,7 +430,7 @@ const Index = () => {
         className="fixed bottom-8 right-8 z-40"
       >
         <Button 
-          onClick={() => setShowCounsellor(!showCounsellor)}
+          onClick={() => setShowAdmin(!showAdmin)}
           className="rounded-full w-16 h-16 bg-gradient-support shadow-warm hover:shadow-deep hover:scale-110 transition-all duration-300"
         >
           <BarChart3 className="w-7 h-7" />
@@ -438,15 +438,15 @@ const Index = () => {
       </motion.div>
       
       <AnimatePresence>
-        {showCounsellor && (
+        {showAdmin && (
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.3 }}
-            id="counsellor"
+            id="admin"
           >
-            <CounsellorDashboard />
+            <AdminDashboard />
           </motion.div>
         )}
       </AnimatePresence>
@@ -481,9 +481,9 @@ const Index = () => {
               <h4 className="font-bold mb-6 text-lg">Crisis Support</h4>
               <div className="space-y-4">
                 {[
-                  { name: "National Suicide Prevention Helpline", number: "9152987821" },
-                  { name: "Campus Safety", number: "(011) 2659-1000" },
-                  { name: "Student Wellness", number: "(011) 2659-1001" }
+                  { name: "National Crisis Line", number: "988" },
+                  { name: "Campus Safety", number: "555-0123" },
+                  { name: "Student Wellness", number: "555-0124" }
                 ].map((hotline, index) => (
                   <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
                     <span className="text-gray-300 font-medium">{hotline.name}</span>
@@ -518,7 +518,7 @@ const Index = () => {
               <h4 className="font-bold mb-6 text-lg">Privacy & Safety</h4>
               <div className="space-y-3">
                 {[
-                  'DPDP Compliant',
+                  'HIPAA Compliant',
                   'End-to-End Encryption',
                   'Anonymous Options',
                   '24/7 Monitoring'
